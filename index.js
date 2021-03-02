@@ -214,6 +214,11 @@ render._withStripped = true
         // We're forcing the background to be shown
         case !this.forceBackground:
           return true;
+        // We've scroll past so add class no so it doesn't tween on the first
+        // detaching moment
+
+        case !this.scrolledPast:
+          return true;
         // We're scrolling up after having scroll past the header and we're not
         // actually at the very top of the page.
 
