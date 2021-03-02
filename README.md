@@ -7,6 +7,7 @@ Wrap your header in this to get it to reveal itself in a detached state on scrol
 ```js
 import Vue from 'vue'
 import DetachableHeader from 'vue-detachable-header'
+import 'vue-detachable-header/index.css'
 Vue.component('detachable-header', DetachableHeader)
 ```
 ```html
