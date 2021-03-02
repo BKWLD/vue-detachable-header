@@ -4,6 +4,11 @@ Wrap your header in this to get it to reveal itself in a detached state on scrol
 
 ## Usage
 
+```js
+import Vue from 'vue'
+import DetachableHeader from 'vue-detachable-header'
+Vue.component('detachable-header', DetachableHeader)
+```
 ```html
 <detachable-header :height="80">
   <desktop-header>...</desktop-header>
@@ -32,7 +37,7 @@ Wrap your header in this to get it to reveal itself in a detached state on scrol
 These are options you can pass to `makeBoilerplate`.  See the [source code](config/boilerplate.coffee) for defaults.
 
 | Name | Default | Description |
-| -------- | ----------- |
+| ---- | ------- | ----------- |
 | `height` | `undefined` | The height of the header as an integer. |
 | `offset` | `0` | Adjusts the `top` of the header by this amount when at the top of the page.  Useful when the site has a notification bar above the header; you would set this value to the height of the notification bar. |
 | `no-offset-when-detached` | `false` | When `false`, if there is an offset, the header respects the `offset` when detached (aka, when you have scrolled down the page a ways and then scrolled back up).  This is useful for notification bars that don't hide on scrol.  When `true`, the header has a `top` of `0` when it's detached. |
