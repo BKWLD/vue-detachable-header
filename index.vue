@@ -13,6 +13,9 @@ export default
 
 	props:
 
+		# The height of the affixing header
+		height: Number
+
 		# The distance the header is from the true top of the page. This would be
 		# non-zero when there is some UI that renders above the head, like an
 		# alert banner bar.
@@ -24,9 +27,6 @@ export default
 		# bar is unffected by scrolling.  If true, the offset is removed when in
 		# detached state.
 		noOffsetWhenDetached: Boolean
-
-		# The height of the affixing header
-		height: Number
 
 		# Show the background color regardless of scroll position
 		forceBackground: Boolean
