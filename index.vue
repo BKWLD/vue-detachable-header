@@ -2,7 +2,7 @@
 
 <template lang='pug'>
 
-.affixing-header(:style='styles' :class='classes'): slot
+.detachable-header(:style='styles' :class='classes'): slot
 
 </template>
 
@@ -13,7 +13,7 @@ export default
 
 	props:
 
-		# The height of the affixing header
+		# The height of the header
 		height: Number
 
 		# The distance the header is from the true top of the page. This would be
@@ -154,7 +154,7 @@ export default
 // The speed of transitions, this looks best when fast
 duration = 0.2s
 
-.affixing-header
+.detachable-header
 
 	// Overlap
 	position fixed

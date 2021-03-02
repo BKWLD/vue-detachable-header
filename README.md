@@ -1,18 +1,18 @@
-# affixing-header
+# vue-detachable-header
 
-Wrap your header in this to get it to reveal itself in a detached state on scroll up. Elegantly handles the transition back to the top of the page.
+Wrap your header in this to get it to reveal itself in a detached state on scroll up. Elegantly handles the transition back to a docked state on scroll back to top.
 
 ## Usage
 
 ```html
-<affixing-header :height="80">
+<detachable-header :height="80">
   <desktop-header>...</desktop-header>
-</affixing-header>
+</detachable-header>
 ```
 ```css
 .desktop-header {
 
-  /* Fill the height of the affixing-header */
+  /* Fill the height of the detachable-header */
   height: 100%;
 
   /* Make the header text white at the top of the page */
