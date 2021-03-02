@@ -21,9 +21,9 @@ export default
 			default: 0
 
 		# If false, the offset is assumed to be static, like when a notification
-		# bar is unffected by scrolling.  If true, the offset is affected by scroll,
-		# like a notification bar that scrolls off the page.
-		offsetScrolls: Boolean
+		# bar is unffected by scrolling.  If true, the offset is removed when in
+		# detached state.
+		noOffsetWhenDetached: Boolean
 
 		# The height of the affixing header
 		height: Number
@@ -43,7 +43,7 @@ export default
 	data: ->
 		scrollingUp: false
 		scrollY: 0
-		tweenReveal: false
+		isDetached: false
 		disableTopTween: false
 
 	# Add scroll listners
@@ -56,7 +56,7 @@ export default
 		translateOffset: -> switch
 
 			# Scrolling up after having fully scrolled past
-			when @scrollingUp and @tweenReveal then 0
+			when @scrollingUp and @isDetached then 0
 
 			# When forced to reveal itself
 			when @forceReveal then 0
@@ -73,10 +73,9 @@ export default
 		# Fade in the header when we would show it after scrolling past it's height
 		revealed: -> @scrollingUp or not @scrolledPast
 
-		# At the top of of the page. When the offset isn't reserved (when it
-		# scrolls), we treat being inside of that offset as the top.
+		# At the top of of the page.
 		atScrollTop: ->
-			if @offsetScrolls
+			if @noOffsetWhenDetached
 			then @scrollY <= @offset
 			else @scrollY == 0
 
@@ -88,19 +87,19 @@ export default
 
 			# We're scrolling up after having scroll past the header and we're not
 			# actually at the very top of the page.
-			when @tweenReveal and not @atScrollTop then true
+			when @isDetached and not @atScrollTop then true
 
 		# The top position of the bar, which is affected by the offset prop. This
 		# is used to make room for notifcation bars
 		topPosition: ->
 
 			# Even when scrolling, bar should be offset
-			return @offset unless @offsetScrolls
+			return @offset unless @noOffsetWhenDetached
 
-			# The bar starts off offset but shifts up on scroll. Thus, when tweeing
-			# reveal (aka, down the page), pin to top.  Otherwise, like when at top
-			# of the page, apply the offset
-			if @tweenReveal then 0 else @offset
+			# The bar starts off offset but shifts up on scroll. Thus, when in a
+			# detached state, header should pin to top. Otherwise, like when at top
+			# of the page, the offset pushes the header down.
+			if @isDetached then 0 else @offset
 
 		# Build CSS
 		styles: ->
@@ -110,7 +109,7 @@ export default
 			height: "#{@height}px"
 		classes: -> [
 			"reveal-#{@revealTransition}"
-			'tween-reveal': @tweenReveal
+			'tween-reveal': @isDetached
 			'show-background': @showBackground
 			'disable-top-tween': @disableTopTween
 		]
@@ -120,22 +119,21 @@ export default
 		# Don't allow tweening of the header until the first scroll up. This is
 		# done to prevent a tween happening when the user first scrolls past the
 		# header height
-		scrollingUp: -> @tweenReveal = true if @scrollingUp and @scrolledPast
+		scrollingUp: -> @isDetached = true if @scrollingUp and @scrolledPast
 
 		# Tween when forced and clear when no longer forced if already at the top
 		forceReveal: (bool) ->
-			if @forceReveal then @tweenReveal = true
-			else if @atScrollTop then @tweenReveal = false
+			if @forceReveal then @isDetached = true
+			else if @atScrollTop then @isDetached = false
 
 		# When the user returns to the top, reset the tweening
-		atScrollTop: -> @tweenReveal = false if @atScrollTop
+		atScrollTop: -> @isDetached = false if @atScrollTop
 
-		# Disable the transition on top when switching between tweenReveal states.
-		# Normally we want to allow tweens on top for switching between different
-		# top values, like if a notification bar height changes.  However, in the
-		# moment when we're scrolling back to the top of the page, we instantiously
-		# reset the top but don't want to animate it.
-		tweenReveal: ->
+		# Disable the transition on top when switching between isDetached states.
+		# Normally we want to allow top tweens, like if a notification bar height
+		# changes.  However, in the moment when we're scrolling back to the top of
+		# the page, we instantaneously reset the top but don't want to animate it.
+		isDetached: ->
 			@disableTopTween = true
 			setTimeout (=> @disableTopTween = false), 0
 
@@ -169,8 +167,8 @@ duration = 0.2s
 	transition-property background, top
 	transition-duration duration
 
-	// If the offset scrolls, then don't transition the top since the value
-	// may change as teh user scrolls
+	// Don't tween `top` when it changes as a result of reaching the top of the
+	// page
 	&.disable-top-tween
 		transition-property background
 
