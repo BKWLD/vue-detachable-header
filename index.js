@@ -116,7 +116,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "affixing-header", class: _vm.classes, style: _vm.styles },
+    { staticClass: "detachable-header", class: _vm.classes, style: _vm.styles },
     [_vm._t("default")],
     2
   )
@@ -130,6 +130,8 @@ render._withStripped = true
 // CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/coffee-loader!./node_modules/vue-loader/lib??vue-loader-options!./index.vue?vue&type=script&lang=coffee&
 /* harmony default export */ var lib_vue_loader_options_indexvue_type_script_lang_coffee_ = ({
   props: {
+    // The height of the header
+    height: Number,
     // The distance the header is from the true top of the page. This would be
     // non-zero when there is some UI that renders above the head, like an
     // alert banner bar.
@@ -141,8 +143,6 @@ render._withStripped = true
     // bar is unffected by scrolling.  If true, the offset is removed when in
     // detached state.
     noOffsetWhenDetached: Boolean,
-    // The height of the affixing header
-    height: Number,
     // Show the background color regardless of scroll position
     forceBackground: Boolean,
     // Show the header, regardless of scroll position

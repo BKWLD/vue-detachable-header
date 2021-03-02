@@ -1,4 +1,4 @@
-.affixing-header[data-v-6de5ab34] {
+.detachable-header[data-v-6de5ab34] {
   position: fixed;
   width: 100%;
   z-index: 10;
@@ -7,7 +7,7 @@
   transition-property: background, top;
   transition-duration: 0.2s;
 }
-.affixing-header.disable-top-tween[data-v-6de5ab34] {
+.detachable-header.disable-top-tween[data-v-6de5ab34] {
   transition-property: background;
 }
 .tween-reveal.reveal-translate[data-v-6de5ab34] {
