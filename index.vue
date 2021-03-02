@@ -85,6 +85,10 @@ export default
 			# We're forcing the background to be shown
 			when @forceBackground then true
 
+			# We've scroll past so add class no so it doesn't tween on the first
+			# detaching moment
+			when @scrolledPast then true
+
 			# We're scrolling up after having scroll past the header and we're not
 			# actually at the very top of the page.
 			when @isDetached and not @atScrollTop then true
