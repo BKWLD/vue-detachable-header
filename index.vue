@@ -44,6 +44,7 @@ export default
 		scrollingUp: false
 		scrollY: 0
 		tweenReveal: false
+		disableTopTween: false
 
 	# Add scroll listners
 	mounted: -> window.addEventListener 'scroll', @onScroll
@@ -72,30 +73,34 @@ export default
 		# Fade in the header when we would show it after scrolling past it's height
 		revealed: -> @scrollingUp or not @scrolledPast
 
-		# At the top of of the page
-		atScrollTop: -> @scrollY == 0
+		# At the top of of the page. When the offset isn't reserved (when it
+		# scrolls), we treat being inside of that offset as the top.
+		atScrollTop: ->
+			if @offsetScrolls
+			then @scrollY <= @offset
+			else @scrollY == 0
 
 		# Can be used to add a background color when down the page
-		showBackground: ->
+		showBackground: -> switch
 
 			# We're forcing the background to be shown
-			@forceBackground or
+			when @forceBackground then true
 
 			# We're scrolling up after having scroll past the header and we're not
 			# actually at the very top of the page.
-			(@tweenReveal and not @atScrollTop)
+			when @tweenReveal and not @atScrollTop then true
 
 		# The top position of the bar, which is affected by the offset prop. This
 		# is used to make room for notifcation bars
 		topPosition: ->
-			return @offset
+
+			# Even when scrolling, bar should be offset
 			return @offset unless @offsetScrolls
 
-			# The offset scrolls and we're down the page so position to the top
-			return 0 if @scrolledPast
-
-			# Apply the difference between
-			# return -1 * Math.max(@scrollY - @offset) - @translateOffset
+			# The bar starts off offset but shifts up on scroll. Thus, when tweeing
+			# reveal (aka, down the page), pin to top.  Otherwise, like when at top
+			# of the page, apply the offset
+			if @tweenReveal then 0 else @offset
 
 		# Build CSS
 		styles: ->
@@ -105,9 +110,9 @@ export default
 			height: "#{@height}px"
 		classes: -> [
 			"reveal-#{@revealTransition}"
-			'offset-scrolls': @offsetScrolls
 			'tween-reveal': @tweenReveal
 			'show-background': @showBackground
+			'disable-top-tween': @disableTopTween
 		]
 
 	watch:
@@ -123,7 +128,16 @@ export default
 			else if @atScrollTop then @tweenReveal = false
 
 		# When the user returns to the top, reset the tweening
-		atScrollTop: -> @tweenReveal = false unless @atScrollTop
+		atScrollTop: -> @tweenReveal = false if @atScrollTop
+
+		# Disable the transition on top when switching between tweenReveal states.
+		# Normally we want to allow tweens on top for switching between different
+		# top values, like if a notification bar height changes.  However, in the
+		# moment when we're scrolling back to the top of the page, we instantiously
+		# reset the top but don't want to animate it.
+		tweenReveal: ->
+			@disableTopTween = true
+			setTimeout (=> @disableTopTween = false), 0
 
 	methods:
 
@@ -139,7 +153,7 @@ export default
 
 <style lang='stylus' scoped>
 
-// The speed of transitions
+// The speed of transitions, this looks best when fast
 duration = 0.2s
 
 .affixing-header
@@ -157,18 +171,14 @@ duration = 0.2s
 
 	// If the offset scrolls, then don't transition the top since the value
 	// may change as teh user scrolls
-	&.offset-scrolls
+	&.disable-top-tween
 		transition-property background
 
 // When tweening the veal, apply these rules
 .tween-reveal
 	&.reveal-translate
 		transition-property transform, background, top
-		&.offset-scrolls
-			transition-property transform, background
 	&.reveal-fade
 		transition-property opacity, background, top
-		&.offset-scrolls
-			transition-property opacity, background
 
 </style>
