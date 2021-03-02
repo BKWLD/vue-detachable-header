@@ -1,0 +1,19 @@
+.affixing-header[data-v-6de5ab34] {
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  transition-property: background, top;
+  transition-duration: 0.2s;
+}
+.affixing-header.disable-top-tween[data-v-6de5ab34] {
+  transition-property: background;
+}
+.tween-reveal.reveal-translate[data-v-6de5ab34] {
+  transition-property: transform, background, top;
+}
+.tween-reveal.reveal-fade[data-v-6de5ab34] {
+  transition-property: opacity, background, top;
+}
+
