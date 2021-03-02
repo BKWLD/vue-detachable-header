@@ -51,9 +51,6 @@ export default
 
 	computed:
 
-		# Is the page currently loading. This won't exist on Shopify.
-		loading: -> @$store.state.loading?.pageLoading
-
 		# When doing the initial scroll down from the top
 		translateOffset: -> switch
 
