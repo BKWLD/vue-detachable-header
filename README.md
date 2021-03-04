@@ -45,5 +45,4 @@ These are options you can pass to `makeBoilerplate`.  See the [source code](conf
 | `reveal-transition` | `"translate"` | How the header enters when detached.  Supports "translate" and "fade". |
 | `force-background` | `false` | Forces `show-background` class. |
 | `force-reveal` | `false` | Forces reveal of detached state. |
-
-
+| `scroll` | `undefined` | Manually pass in the current scroll value. This could be useful when used with a smooth scrolling library. |

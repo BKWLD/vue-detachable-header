@@ -40,17 +40,30 @@ export default
 			default: 'translate'
 			validator: (val) -> val in ['fade', 'translate']
 
+		# Pass in a scroll value, like if using smooth scroller
+		scroll: Number
+
 	data: ->
 		scrollingUp: false
-		scrollY: 0
+		windowScroll: 0
 		isDetached: false
 		disableTopTween: false
 
 	# Add scroll listners
-	mounted: -> window.addEventListener 'scroll', @onScroll
-	destroyed: -> window.removeEventListener 'scroll', @onScroll
+	mounted: ->
+		if @usesWindowScroll
+		then window.addEventListener 'scroll', @onScroll
+	destroyed: ->
+		if @usesWindowScroll
+		then window.removeEventListener 'scroll', @onScroll
 
 	computed:
+
+		# Is the scroll value being passed in
+		usesWindowScroll: -> @scroll == undefined
+
+		# Get the scrollY from the proper source
+		scrollY: -> if @usesWindowScroll then @windowScroll else @scroll
 
 		# When doing the initial scroll down from the top
 		translateOffset: -> switch
@@ -120,6 +133,9 @@ export default
 
 	watch:
 
+		# Figure out scroll direction
+		scrollY: (now, old) -> @scrollingUp = now != 0 and now < old
+
 		# Don't allow tweening of the header until the first scroll up. This is
 		# done to prevent a tween happening when the user first scrolls past the
 		# header height
@@ -144,10 +160,7 @@ export default
 	methods:
 
 		# Store scroll variables
-		onScroll: ->
-			now = window.scrollY
-			@scrollingUp = now != 0 and now < @scrollY
-			@scrollY = now
+		onScroll: -> @windowScroll = window.scrollY
 
 </script>
 
