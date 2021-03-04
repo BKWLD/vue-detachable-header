@@ -154,24 +154,42 @@ render._withStripped = true
       validator: function (val) {
         return val === 'fade' || val === 'translate';
       }
-    }
+    },
+    // Pass in a scroll value, like if using smooth scroller
+    scroll: Number
   },
   data: function () {
     return {
       scrollingUp: false,
-      scrollY: 0,
+      windowScroll: 0,
       isDetached: false,
       disableTopTween: false
     };
   },
   // Add scroll listners
   mounted: function () {
-    return window.addEventListener('scroll', this.onScroll);
+    if (this.usesWindowScroll) {
+      return window.addEventListener('scroll', this.onScroll);
+    }
   },
   destroyed: function () {
-    return window.removeEventListener('scroll', this.onScroll);
+    if (this.usesWindowScroll) {
+      return window.removeEventListener('scroll', this.onScroll);
+    }
   },
   computed: {
+    // Is the scroll value being passed in
+    usesWindowScroll: function () {
+      return this.scroll === void 0;
+    },
+    // Get the scrollY from the proper source
+    scrollY: function () {
+      if (this.usesWindowScroll) {
+        return this.windowScroll;
+      } else {
+        return this.scroll;
+      }
+    },
     // When doing the initial scroll down from the top
     translateOffset: function () {
       switch (false) {
@@ -261,6 +279,10 @@ render._withStripped = true
     }
   },
   watch: {
+    // Figure out scroll direction
+    scrollY: function (now, old) {
+      return this.scrollingUp = now !== 0 && now < old;
+    },
     // Don't allow tweening of the header until the first scroll up. This is
     // done to prevent a tween happening when the user first scrolls past the
     // header height
@@ -297,10 +319,7 @@ render._withStripped = true
   methods: {
     // Store scroll variables
     onScroll: function () {
-      var now;
-      now = window.scrollY;
-      this.scrollingUp = now !== 0 && now < this.scrollY;
-      return this.scrollY = now;
+      return this.windowScroll = window.scrollY;
     }
   }
 });
