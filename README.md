@@ -35,8 +35,6 @@ Vue.component('detachable-header', DetachableHeader)
 
 ## Props
 
-These are options you can pass to `makeBoilerplate`.  See the [source code](config/boilerplate.coffee) for defaults.
-
 | Name | Default | Description |
 | ---- | ------- | ----------- |
 | `height` | `undefined` | The height of the header as an integer. |
