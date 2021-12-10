@@ -103,10 +103,13 @@ export default
 
 			# When scrolling up always show
 			return true if @scrollingUp
-			return true if !@scrollingUp and @isDetached and (Math.abs(@scrollY - @scrollYOnScrollDownStart) < @closeOnScrollThreshold)
 
 			# When scrolling down and detached, wait closeOnScrollThreshold before
 			# hiding
+			scrollDistanceSinceReveal = Math.abs @scrollY - @scrollYOnScrollDownStart
+			return true if !@scrollingUp and @isDetached and
+				scrollDistanceSinceReveal < @closeOnScrollThreshold
+
 			# When at top, show.  Else hide.
 			return !@scrolledPast
 
