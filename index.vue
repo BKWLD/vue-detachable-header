@@ -85,7 +85,8 @@ export default
 			# Since we're fading to reveal, don't offset the transform
 			when @scrolledPast and @revealTransition == 'fade' then 0
 
-			# When scrolling down from top, shift off screen equally until scrolled past
+			# When scrolling down from top, shift off screen equally until scrolled
+			# past
 			when not @scrolledPast then -1 * @scrollY
 
 			# When detached and revealed, show
@@ -99,10 +100,13 @@ export default
 
 		# Fade in the header when we would show it after scrolling past it's height
 		revealed: ->
+
 			# When scrolling up always show
 			return true if @scrollingUp
-			# When scrolling down and detached, wait closeOnScrollThreshold before hiding
 			return true if !@scrollingUp and @isDetached and (Math.abs(@scrollY - @scrollYOnScrollDownStart) < @closeOnScrollThreshold)
+
+			# When scrolling down and detached, wait closeOnScrollThreshold before
+			# hiding
 			# When at top, show.  Else hide.
 			return !@scrolledPast
 
@@ -157,10 +161,12 @@ export default
 		scrollY: (now, old) -> @scrollingUp = now != 0 and now < old
 
 		scrollingUp: ->
+
 			# Don't allow tweening of the header until the first scroll up. This is
 			# done to prevent a tween happening when the user first scrolls past the
 			# header height
 			@isDetached = true if @scrollingUp and @scrolledPast
+
 			# When header is detached and we start scrolling down, save scrollY value
 			@scrollYOnScrollDownStart = @scrollY if @isDetached and !@scrollingUp
 
@@ -170,8 +176,10 @@ export default
 			else if @atScrollTop then @isDetached = false
 
 		atScrollTop: ->
+
 			# When the user returns to the top, reset the tweening
 			@isDetached = false if @atScrollTop
+
 			# Emit event so the parent can use atScrollTop for styles or logic
 			@$emit 'atScrollTop', @atScrollTop
 
