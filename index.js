@@ -156,14 +156,22 @@ render._withStripped = true
       }
     },
     // Pass in a scroll value, like if using smooth scroller
-    scroll: Number
+    scroll: Number,
+    // When the bar is detached and revealed, this is the distance you must
+    // scroll down to hide the bar.  Larger values help prevent the user from
+    // accidentally hiding the bar when interacting with subnavs.
+    closeOnScrollThreshold: {
+      type: Number,
+      default: 0
+    }
   },
   data: function () {
     return {
       scrollingUp: false,
       windowScroll: 0,
       isDetached: false,
-      disableTopTween: false
+      disableTopTween: false,
+      scrollYOnScrollDownStart: 0
     };
   },
   // Add scroll listners
@@ -204,10 +212,18 @@ render._withStripped = true
 
         case !(this.scrolledPast && this.revealTransition === 'fade'):
           return 0;
+        // When scrolling down from top, shift off screen equally until scrolled past
+
+        case !!this.scrolledPast:
+          return -1 * this.scrollY;
+        // When detached and revealed, show
+
+        case !(this.isDetached && this.revealed):
+          return 0;
 
         default:
-          // When scrolling down, shift off screen equally until scrolled past
-          return -1 * Math.min(this.height + this.offset, this.scrollY);
+          // Else, hide
+          return -1 * this.height;
       }
     },
     // Has the scroll moved past the header
@@ -216,7 +232,17 @@ render._withStripped = true
     },
     // Fade in the header when we would show it after scrolling past it's height
     revealed: function () {
-      return this.scrollingUp || !this.scrolledPast;
+      if (this.scrollingUp) {
+        // When scrolling up always show
+        return true;
+      }
+
+      if (!this.scrollingUp && this.isDetached && Math.abs(this.scrollY - this.scrollYOnScrollDownStart) < this.closeOnScrollThreshold) {
+        // When scrolling down and detached, wait closeOnScrollThreshold before hiding
+        return true;
+      }
+
+      return !this.scrolledPast;
     },
     // At the top of of the page.
     atScrollTop: function () {
@@ -283,12 +309,17 @@ render._withStripped = true
     scrollY: function (now, old) {
       return this.scrollingUp = now !== 0 && now < old;
     },
-    // Don't allow tweening of the header until the first scroll up. This is
-    // done to prevent a tween happening when the user first scrolls past the
-    // header height
     scrollingUp: function () {
       if (this.scrollingUp && this.scrolledPast) {
-        return this.isDetached = true;
+        // Don't allow tweening of the header until the first scroll up. This is
+        // done to prevent a tween happening when the user first scrolls past the
+        // header height
+        this.isDetached = true;
+      }
+
+      if (this.isDetached && !this.scrollingUp) {
+        // When header is detached and we start scrolling down, save scrollY value
+        return this.scrollYOnScrollDownStart = this.scrollY;
       }
     },
     // Tween when forced and clear when no longer forced if already at the top
@@ -299,11 +330,14 @@ render._withStripped = true
         return this.isDetached = false;
       }
     },
-    // When the user returns to the top, reset the tweening
     atScrollTop: function () {
       if (this.atScrollTop) {
-        return this.isDetached = false;
-      }
+        // When the user returns to the top, reset the tweening
+        this.isDetached = false;
+      } // Emit event so the parent can use atScrollTop for styles or logic
+
+
+      return this.$emit('atScrollTop', this.atScrollTop);
     },
     // Disable the transition on top when switching between isDetached states.
     // Normally we want to allow top tweens, like if a notification bar height

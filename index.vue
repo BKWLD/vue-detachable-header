@@ -43,11 +43,19 @@ export default
 		# Pass in a scroll value, like if using smooth scroller
 		scroll: Number
 
+		# When the bar is detached and revealed, this is the distance you must
+		# scroll down to hide the bar.  Larger values help prevent the user from
+		# accidentally hiding the bar when interacting with subnavs.
+		closeOnScrollThreshold:
+			type: Number
+			default: 0
+
 	data: ->
 		scrollingUp: false
 		windowScroll: 0
 		isDetached: false
 		disableTopTween: false
+		scrollYOnScrollDownStart: 0
 
 	# Add scroll listners
 	mounted: ->
@@ -77,14 +85,33 @@ export default
 			# Since we're fading to reveal, don't offset the transform
 			when @scrolledPast and @revealTransition == 'fade' then 0
 
-			# When scrolling down, shift off screen equally until scrolled past
-			else -1 * Math.min @height + @offset, @scrollY
+			# When scrolling down from top, shift off screen equally until scrolled
+			# past
+			when not @scrolledPast then -1 * @scrollY
+
+			# When detached and revealed, show
+			when @isDetached and @revealed then 0
+
+			# Else, hide
+			else -1 * @height
 
 		# Has the scroll moved past the header
 		scrolledPast: -> @scrollY > @height + @offset
 
 		# Fade in the header when we would show it after scrolling past it's height
-		revealed: -> @scrollingUp or not @scrolledPast
+		revealed: ->
+
+			# When scrolling up always show
+			return true if @scrollingUp
+
+			# When scrolling down and detached, wait closeOnScrollThreshold before
+			# hiding
+			scrollDistanceSinceReveal = Math.abs @scrollY - @scrollYOnScrollDownStart
+			return true if !@scrollingUp and @isDetached and
+				scrollDistanceSinceReveal < @closeOnScrollThreshold
+
+			# When at top, show.  Else hide.
+			return !@scrolledPast
 
 		# At the top of of the page.
 		atScrollTop: ->
@@ -136,18 +163,28 @@ export default
 		# Figure out scroll direction
 		scrollY: (now, old) -> @scrollingUp = now != 0 and now < old
 
-		# Don't allow tweening of the header until the first scroll up. This is
-		# done to prevent a tween happening when the user first scrolls past the
-		# header height
-		scrollingUp: -> @isDetached = true if @scrollingUp and @scrolledPast
+		scrollingUp: ->
+
+			# Don't allow tweening of the header until the first scroll up. This is
+			# done to prevent a tween happening when the user first scrolls past the
+			# header height
+			@isDetached = true if @scrollingUp and @scrolledPast
+
+			# When header is detached and we start scrolling down, save scrollY value
+			@scrollYOnScrollDownStart = @scrollY if @isDetached and !@scrollingUp
 
 		# Tween when forced and clear when no longer forced if already at the top
 		forceReveal: (bool) ->
 			if @forceReveal then @isDetached = true
 			else if @atScrollTop then @isDetached = false
 
-		# When the user returns to the top, reset the tweening
-		atScrollTop: -> @isDetached = false if @atScrollTop
+		atScrollTop: ->
+
+			# When the user returns to the top, reset the tweening
+			@isDetached = false if @atScrollTop
+
+			# Emit event so the parent can use atScrollTop for styles or logic
+			@$emit 'atScrollTop', @atScrollTop
 
 		# Disable the transition on top when switching between isDetached states.
 		# Normally we want to allow top tweens, like if a notification bar height
