@@ -110,7 +110,7 @@ module.exports =
 __webpack_require__.r(__webpack_exports__);
 
 // CONCATENATED MODULE: ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/pug-plain-loader!./node_modules/vue-loader/lib??vue-loader-options!./index.vue?vue&type=template&id=6de5ab34&scoped=true&lang=pug&
-var render = function() {
+var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
@@ -212,7 +212,8 @@ render._withStripped = true
 
         case !(this.scrolledPast && this.revealTransition === 'fade'):
           return 0;
-        // When scrolling down from top, shift off screen equally until scrolled past
+        // When scrolling down from top, shift off screen equally until scrolled
+        // past
 
         case !!this.scrolledPast:
           return -1 * this.scrollY;
@@ -232,13 +233,18 @@ render._withStripped = true
     },
     // Fade in the header when we would show it after scrolling past it's height
     revealed: function () {
+      var scrollDistanceSinceReveal;
+
       if (this.scrollingUp) {
         // When scrolling up always show
         return true;
-      }
+      } // When scrolling down and detached, wait closeOnScrollThreshold before
+      // hiding
 
-      if (!this.scrollingUp && this.isDetached && Math.abs(this.scrollY - this.scrollYOnScrollDownStart) < this.closeOnScrollThreshold) {
-        // When scrolling down and detached, wait closeOnScrollThreshold before hiding
+
+      scrollDistanceSinceReveal = Math.abs(this.scrollY - this.scrollYOnScrollDownStart);
+
+      if (!this.scrollingUp && this.isDetached && scrollDistanceSinceReveal < this.closeOnScrollThreshold) {
         return true;
       }
 
