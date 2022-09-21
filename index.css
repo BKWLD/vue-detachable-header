@@ -1,4 +1,4 @@
-.detachable-header[data-v-6de5ab34] {
+.detachable-header[data-v-574fd4a6] {
   position: fixed;
   width: 100%;
   z-index: 10;
@@ -7,13 +7,13 @@
   transition-property: background, top;
   transition-duration: 0.2s;
 }
-.detachable-header.disable-top-tween[data-v-6de5ab34] {
+.detachable-header.disable-top-tween[data-v-574fd4a6] {
   transition-property: background;
 }
-.tween-reveal.reveal-translate[data-v-6de5ab34] {
+.tween-reveal.reveal-translate[data-v-574fd4a6] {
   transition-property: transform, background, top;
 }
-.tween-reveal.reveal-fade[data-v-6de5ab34] {
+.tween-reveal.reveal-fade[data-v-574fd4a6] {
   transition-property: opacity, background, top;
 }
 
