@@ -51,9 +51,9 @@ export default
 			default: 0
 
 
-		offScreenPad:
+		offscreenHeight:
 			type: Number
-			default: 0
+			default: -> @height
 
 	data: ->
 		scrollingUp: false
@@ -98,7 +98,7 @@ export default
 			when @isDetached and @revealed then 0
 
 			# Else, hide
-			else (-1 * @height) - @offScreenPad
+			else -1 * @offscreenHeight
 
 		# Has the scroll moved past the header
 		scrolledPast: -> @scrollY > @height + @offset
