@@ -44,4 +44,4 @@ Vue.component('detachable-header', DetachableHeader)
 | `force-background` | `false` | Forces `show-background` class. |
 | `force-reveal` | `false` | Forces reveal of detached state. |
 | `scroll` | `undefined` | Manually pass in the current scroll value. This could be useful when used with a smooth scrolling library. |
-| `off-screen-pad` | `0` | Adds additional padding to the offscreen height to account for headers that may have overflow on the lower edge |
+| `off-screen-height` | `0` | Sets the offscreen height to account for headers that may have overflow on the lower edge |
